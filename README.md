@@ -39,3 +39,5 @@ emr serverless hive: by application, by job
 ### 3.7 resource consumotion statistics if via emr serverless
 
 ## 4 summary
+
+## appendix: DolphinScheduler pseudo cluster installation guidance
