@@ -10,15 +10,14 @@
 
 **data warehouse consumption workload pattern**
 - end users view reports generated via data warehouse per week/month;
-- end users query the tables of the data warehouser ad hoc;
+- end users query the tables of the data warehouse ad-hoc;
 - query engine currently leverages on impala
 
 
 ## 2. data warehouse tech architecture consideration
 
-long provisioned cluster vs serverless
-
-purpose built dw engine vs hadoop eco-system
+the existing data warehouse is sitting on a long provisioned CDH cluster. Since the batch data processing workload lasts 5 hours per day during mid-night, with end user ad-hoc query follows a quite sparse pattern, it is recommended that the upgraded data warehouse leverages on serverless engine to achieve a cost performant way of building data warehouse.
+customer is familiar with hive as well as impala, as a result, hive application @ emr serverless, as well as athena are considered as the processing as well as query engine of the upgraded data warehouse.
 
 
 query engine:
