@@ -33,6 +33,7 @@ Customer is keen at finding out a way to know the resource consumption each end 
 
 Prototyping Architecture Diagram is shown as below:
 
+<img width="728" alt="image" src="https://github.com/symeta/dw-prototyping/assets/97269758/e36e2469-a5f3-492c-8dc8-3e2bc937faf0">
 
 ### 3.1 athena query as dw tiering engine, data stored as csv
 - original csv data files uploaded to S3 bucket, via web console, or via command line.
