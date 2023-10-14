@@ -2,6 +2,18 @@
 
 ## 1. workload pattern description
 
+**data warehouse production workload pattern**
+- data warehouse tiering processes T+1 data in batch;
+- 4 layers of the data warehouse;
+- data warehouse tiering jobs take place during 1am and 5am per day;
+- data warehouse processing engine currently leverages on hive, managed by HUE, job orchestrated by DolphinScheduler;
+
+**data warehouse consumption workload pattern**
+- end users view reports generated via data warehouse per week/month;
+- end users query the tables of the data warehouser ad hoc;
+- query engine currently leverages on impala
+
+
 ## 2. data warehouse tech architecture consideration
 
 long provisioned cluster vs serverless
