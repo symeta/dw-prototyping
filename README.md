@@ -41,7 +41,7 @@ aws s3 cp <csv data file> s3://<s3 bucket>/<specific prefix>/<csv data file>
 #sample command line
 aws s3 cp cash_plus.am_deposit_withdrawal.csv s3://shiyang/dw/ods/raw/cash_plus/am_deposit_withdrawal/cash_plus.am_deposit_withdrawal.csv
 ```
-- map the csv data file with hive table
+- map the csv data file with hive table via the sql below. There are 8 target tables, 1 is shown for instance.
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS `cash_plus_am_deposit_withdrawal`(
   `id` string, 
@@ -83,10 +83,138 @@ CREATE EXTERNAL TABLE IF NOT EXISTS `cash_plus_am_deposit_withdrawal`(
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
 LOCATION 's3://shiyang/dw/ods/raw/cash_plus/am_deposit_withdrawal/'
 ```
-
-original csv files mapping with athena table:
+- destination table is defined via the sql below
+```sql
+CREATE EXTERNAL TABLE `fdm_regular_saving_plan_order_a_d` (
+  `pid` string, 
+  `order_id` string, 
+  `uuid` string, 
+  `omni_order_id` string, 
+  `account_id` string, 
+  `account` string, 
+  `sec_type` string, 
+  `product_id` string, 
+  `symbol` string, 
+  `direction` string, 
+  `seg_type` string, 
+  `currency` string, 
+  `amount` string, 
+  `purchase_fee` string, 
+  `purchase_fee_gst` string, 
+  `trade_time` string, 
+  `effective_time` string, 
+  `priced_time` string, 
+  `nav` string, 
+  `nav_date` string, 
+  `shares` string, 
+  `avg_nav` string, 
+  `realized_pnl` string, 
+  `bs_id` string, 
+  `bs_time` string, 
+  `reason` string, 
+  `type` string, 
+  `payment_method` string,
+  `payment_detail` string,
+  `status` string,
+  `rsp_id` string,
+  `rsp_order_type` string,
+  `rsp_order_status` string,
+  `create_time` string,
+  `update_time` string,
+  `is_rsp_order` int,
+  `data_flag` string)
+STORED AS parquet
+LOCATION 's3://shiyang-noaa-gsod-pds/dw/fdm/'
+```
+the query result performance is shown as below.
+<img width="518" alt="Screenshot 2023-10-14 at 22 13 51" src="https://github.com/symeta/dw-prototyping/assets/97269758/501c82f8-c5ee-4afb-a618-cf6dc297be46">
 
 ### 3.2 athena query as dw tiering engine, data stored as parquet
+- convert csv data file to parquet data file
+```sql
+# parquet table DDL, for large files, consider leveraging on partition.
+CREATE EXTERNAL TABLE `parquet_cash_plus_am_deposit_withdrawal` (
+  `id` string, 
+  `uuid` string, 
+  `external_id` string, 
+  `order_id` string, 
+  `account` string, 
+  `sec_type` string, 
+  `product_id` string, 
+  `symbol` string, 
+  `direction` string, 
+  `seg_type` string, 
+  `currency` string, 
+  `trade_currency` string, 
+  `amount` string, 
+  `purchase_fee` string, 
+  `purchase_fee_gst` string, 
+  `trade_time` string, 
+  `effective_time` string, 
+  `priced_time` string, 
+  `nav` string, 
+  `nav_date` string, 
+  `shares` string, 
+  `avg_nav` string, 
+  `realized_pnl` string, 
+  `bs_id` string, 
+  `bs_time` string, 
+  `reason` string, 
+  `type` string, 
+  `payment_method` string,
+  `payment_detail` string,
+  `order_type` string,
+  `routing_key` string,
+  `oae_id` string,
+  `status` string,
+  `attrs` string,
+  `create_time` string,
+  `update_time` string) 
+PARTITIONED BY (data_year string) #set year as partition
+STORED AS parquet
+LOCATION 's3://shiyang-noaa-gsod-pds/dw/ods/parquet/cash_plus/am_deposit_withdrawal/'
+
+#ingest data from csv data file to parquet data file
+INSERT INTO parquet_cash_plus_am_deposit_withdrawal
+SELECT id, 
+  uuid, 
+  external_id, 
+  order_id, 
+  account, 
+  sec_type, 
+  product_id, 
+  symbol, 
+  direction, 
+  seg_type, 
+  currency, 
+  trade_currency, 
+  amount, 
+  purchase_fee, 
+  purchase_fee_gst, 
+  trade_time, 
+  effective_time, 
+  priced_time, 
+  nav, 
+  nav_date, 
+  shares, 
+  avg_nav, 
+  realized_pnl, 
+  bs_id, 
+  bs_time, 
+  reason, 
+  type, 
+  payment_method,
+  payment_detail,
+  order_type,
+  routing_key,
+  oae_id,
+  status,
+  attrs,
+  create_time,
+  update_time,
+  split_part(create_time,'-', 1) as data_year
+FROM cash_plus_am_deposit_withdrawal;
+```
 
 ### 3.3 hive query powered by emr serverless as dw tiering engine, data stored as parquet
 
