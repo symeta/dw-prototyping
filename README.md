@@ -13,7 +13,6 @@
 - end users query the tables of the data warehouse ad-hoc;
 - query engine currently leverages on impala
 
-
 ## 2. data warehouse tech architecture consideration
 
 the existing data warehouse is sitting on a long provisioned CDH cluster. Since the batch data processing workload lasts 5 hours per day during mid-night, with end user ad-hoc query follows a quite sparse pattern, it is recommended that the to-be-upgraded data warehouse leverages on serverless engine to achieve a cost performant way of building data warehouse.
@@ -21,20 +20,6 @@ the existing data warehouse is sitting on a long provisioned CDH cluster. Since 
 customer is familiar with hive as well as impala, as a result, hive application @ emr serverless, as well as athena are considered as the processing as well as query engine of the to-be-upgraded data warehouse.
 
 DolphinScheduler remains to be the job orchestrator, since customer is familiar with its operations. While Step Function which is an aws native job orchestrator is suggested.
-
-
-query engine:
-athena query as dw tiering engine, data stored as csv
-athena query as dw tiering engine, data stored as parquet
-hive query powered by emr serverless as dw tiering engine, data stored as parquet
-
-orchestration:
-DolphinScheduler
-Step Function
-
-resource consumption granularity:
-athena: by workgroup 
-emr serverless hive: by application, by job
 
 ## 3. Prototyping Detail
 In order to showcase the benefits of the to-be-upgraded data warehouse, three usecases have been tested, namely:
@@ -46,7 +31,60 @@ Orchestrator wise, operation guidance of orchestrating athena query as well as h
 
 Customer is keen at finding out a way to know the resource consumption each end user consumes. As a result, the mechanism of both athena and emr serverless achieving this objective is introduced. (refer to 3.6, 3.7)
 
+Prototyping Architecture Diagram is shown as below:
+
+
 ### 3.1 athena query as dw tiering engine, data stored as csv
+- original csv data files uploaded to S3 bucket, via web console, or via command line.
+```sh
+aws s3 cp <csv data file> s3://<s3 bucket>/<specific prefix>/<csv data file>
+#sample command line
+aws s3 cp cash_plus.am_deposit_withdrawal.csv s3://shiyang/dw/ods/raw/cash_plus/am_deposit_withdrawal/cash_plus.am_deposit_withdrawal.csv
+```
+- map the csv data file with hive table
+```sql
+CREATE EXTERNAL TABLE IF NOT EXISTS `cash_plus_am_deposit_withdrawal`(
+  `id` string, 
+  `uuid` string, 
+  `external_id` string, 
+  `order_id` string, 
+  `account` string, 
+  `sec_type` string, 
+  `product_id` string, 
+  `symbol` string, 
+  `direction` string, 
+  `seg_type` string, 
+  `currency` string, 
+  `trade_currency` string, 
+  `amount` string, 
+  `purchase_fee` string, 
+  `purchase_fee_gst` string, 
+  `trade_time` string, 
+  `effective_time` string, 
+  `priced_time` string, 
+  `nav` string, 
+  `nav_date` string, 
+  `shares` string, 
+  `avg_nav` string, 
+  `realized_pnl` string, 
+  `bs_id` string, 
+  `bs_time` string, 
+  `reason` string, 
+  `type` string, 
+  `payment_method` string,
+  `payment_detail` string,
+  `order_type` string,
+  `routing_key` string,
+  `oae_id` string,
+  `status` string,
+  `attrs` string,
+  `create_time` string,
+  `update_time` string)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+LOCATION 's3://shiyang/dw/ods/raw/cash_plus/am_deposit_withdrawal/'
+```
+
+original csv files mapping with athena table:
 
 ### 3.2 athena query as dw tiering engine, data stored as parquet
 
@@ -57,6 +95,10 @@ Customer is keen at finding out a way to know the resource consumption each end 
 ### 3.5 orchestrated by Step Function
 
 ### 3.6 resource consumption statistics if via athena
+
+resource consumption granularity:
+athena: by workgroup 
+emr serverless hive: by application, by job
 
 ### 3.7 resource consumotion statistics if via emr serverless
 
