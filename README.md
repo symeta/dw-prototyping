@@ -17,7 +17,10 @@
 ## 2. data warehouse tech architecture consideration
 
 the existing data warehouse is sitting on a long provisioned CDH cluster. Since the batch data processing workload lasts 5 hours per day during mid-night, with end user ad-hoc query follows a quite sparse pattern, it is recommended that the upgraded data warehouse leverages on serverless engine to achieve a cost performant way of building data warehouse.
+
 customer is familiar with hive as well as impala, as a result, hive application @ emr serverless, as well as athena are considered as the processing as well as query engine of the upgraded data warehouse.
+
+DolphinScheduler remains to be the job orchestrator, since customer is familiar with its operations. While Step Function which is an aws native job orchestrator is suggested.
 
 
 query engine:
