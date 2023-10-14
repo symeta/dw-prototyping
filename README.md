@@ -126,7 +126,7 @@ CREATE EXTERNAL TABLE `fdm_regular_saving_plan_order_a_d` (
 STORED AS parquet
 LOCATION 's3://shiyang-noaa-gsod-pds/dw/fdm/'
 ```
-the query result performance is shown as below.
+the target data warehouse tiering job query result performance metrics are shown as below.
 
 <img width="518" alt="Screenshot 2023-10-14 at 22 13 51" src="https://github.com/symeta/dw-prototyping/assets/97269758/501c82f8-c5ee-4afb-a618-cf6dc297be46">
 
@@ -216,8 +216,13 @@ SELECT id,
   split_part(create_time,'-', 1) as data_year
 FROM cash_plus_am_deposit_withdrawal;
 ```
+the target data warehouse tiering job query result performance metrics are shown as below.
+
+<img width="511" alt="Screenshot 2023-10-14 at 22 23 55" src="https://github.com/symeta/dw-prototyping/assets/97269758/daa62fc6-32cb-4408-bf81-4d964c54a12c">
+
 
 ### 3.3 hive query powered by emr serverless as dw tiering engine, data stored as parquet
+
 
 ### 3.4 orchestrated by DolphinScheduler
 
