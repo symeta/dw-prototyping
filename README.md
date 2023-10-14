@@ -127,6 +127,7 @@ STORED AS parquet
 LOCATION 's3://shiyang-noaa-gsod-pds/dw/fdm/'
 ```
 the query result performance is shown as below.
+
 <img width="518" alt="Screenshot 2023-10-14 at 22 13 51" src="https://github.com/symeta/dw-prototyping/assets/97269758/501c82f8-c5ee-4afb-a618-cf6dc297be46">
 
 ### 3.2 athena query as dw tiering engine, data stored as parquet
