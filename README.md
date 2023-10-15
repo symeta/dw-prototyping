@@ -663,10 +663,25 @@ TBW
 ### 3.6 resource consumption statistics if via athena
 in terms of resource consumption granularity, athena is by workgroup, meaning that each workgroup can be attached a specific cost allocation tag and resource consumption of this workgroup could be viewed via cost explorer as well as billing.
 
+athena workgroup could be tagged via cmd as below:
+```sh
+aws athena tag-resource \
+    --resource-arn arn:aws:athena:us-east-1:324874492192:workgroup/primary \
+    --tags Key=CostCenter,Value=123
+```
+after cost allocation tag is created, it should be activated in Billing Console --> Cost Allocation Tags
 
 ### 3.7 resource consumotion statistics if via emr serverless
 in temrs of resource consumption granulartiy, emr serverless hive supports both by application and by job, meaning that either application or job can be attached a specific cost allocation tag and resource consumption of either an application or a job could be viewed via cost explorer as well as billing.
 
+emr serverless hive application and job could be tagged via creation.
+```sh
+  --tag '{
+    "CostCenter": "123"
+  }'
+```
+
 ## 4 summary
+
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
