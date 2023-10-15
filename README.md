@@ -329,10 +329,195 @@ aws iam put-role-policy --role-name emr-serverless-job-role --policy-name GlueAc
 export JOB_ROLE_ARN=arn:aws:iam::<aws account id>:role/emr-serverless-job-role
 ```
 
-**create a hive application**
-```sh
+**create a hive application and submit hive job**
 
+- create hive application
+```sh
+aws emr-serverless create-application \
+  --type HIVE \
+  --name <specific application name> \ 
+  --release-label "emr-6.6.0" \
+  --initial-capacity '{
+        "DRIVER": {
+            "workerCount": 1,
+            "workerConfiguration": {
+                "cpu": "2vCPU",
+                "memory": "4GB",
+                "disk": "30gb"
+            }
+        },
+        "TEZ_TASK": {
+            "workerCount": 10,
+            "workerConfiguration": {
+                "cpu": "4vCPU",
+                "memory": "8GB",
+                "disk": "30gb"
+            }
+        }
+    }' \
+  --maximum-capacity '{
+        "cpu": "400vCPU",
+        "memory": "1024GB",
+        "disk": "1000GB"
+    }'
 ```
+after executing the cmd, a json response will return as below
+```json
+{
+    "applicationId": "00et0f0b79s06o09",
+    "arn": "arn:aws:emr-serverless:us-west-2:<aws account id>:/applications/00et0f0b79s06o09",
+    "name": <specific application name>
+}
+```
+- check the state of the hive application
+```sh
+export applicationId=00et0f0b79s06o09
+aws emr-serverless get-application --application-id $applicationId
+```
+response like below could be acquired.
+```json
+{
+    "application": {
+        "applicationId": "00fdt9vnqe0p7u09",
+        "name": <specific application name>,
+        "arn": "arn:aws:emr-serverless:us-east-1:<aws account id>:/applications/00fdt9vnqe0p7u09",
+        "releaseLabel": "emr-6.6.0",
+        "type": "Hive",
+        "state": "STARTED",
+        "stateDetails": "AUTO_STOPPING",
+        "initialCapacity": {
+            "HiveDriver": {
+                "workerCount": 1,
+                "workerConfiguration": {
+                    "cpu": "2 vCPU",
+                    "memory": "4 GB",
+                    "disk": "30 GB"
+                }
+            },
+            "TezTask": {
+                "workerCount": 10,
+                "workerConfiguration": {
+                    "cpu": "4 vCPU",
+                    "memory": "8 GB",
+                    "disk": "30 GB"
+                }
+            }
+        },
+        "maximumCapacity": {
+            "cpu": "400 vCPU",
+            "memory": "1024 GB",
+            "disk": "1000 GB"
+        },
+        "createdAt": "2023-10-12T03:48:00.480000+00:00",
+        "updatedAt": "2023-10-12T08:16:05.203000+00:00",
+        "tags": {},
+        "autoStartConfiguration": {
+            "enabled": true
+        },
+        "autoStopConfiguration": {
+            "enabled": true,
+            "idleTimeoutMinutes": 15
+        },
+        "architecture": "X86_64"
+    }
+}
+```
+if the "state" is "STRARTED", could further submit the hive job.
+
+- submit the hive job
+```sh
+aws emr-serverless start-job-run \
+    --application-id $applicationId \
+    --execution-role-arn $JOB_ROLE_ARN \
+    --job-driver '{
+        "hive": {
+            "initQueryFile": "s3://<bucket name>/<specific prefix>/create_fdm_table.sql", #DDL SQL for instance
+            "query": "s3://<bucket name>/<specific prefix>/ingest_fdm_data.sql", #DML SQL for instance
+            "parameters": "--hiveconf hive.exec.scratchdir=s3://shiyang-noaa-gsod-pds/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://<bucket name>/hive/warehouse"
+        }
+    }' \
+    --configuration-overrides '{
+        "applicationConfiguration": [
+            {
+                "classification": "hive-site",
+                "properties": {
+                    "hive.driver.cores": "2",
+                    "hive.driver.memory": "4g",
+                    "hive.tez.container.size": "8192",
+                    "hive.tez.cpu.vcores": "4"
+                }
+            }
+        ],
+        "monitoringConfiguration": {
+            "s3MonitoringConfiguration": {
+                "logUri": "s3://<bucket name>/hive-logs/"
+            }
+        }
+    }'
+```
+the json formate response is as below.
+
+```json
+{
+    "applicationId": "00fdt9vnqe0p7u09",
+    "jobRunId": "00fdvr7mvngkk80a",
+    "arn": "arn:aws:emr-serverless:us-east-1:324874492192:/applications/00fdt9vnqe0p7u09/jobruns/00fdvr7mvngkk80a"
+}
+```
+execute the follow cmd to check the state of the job.
+```sh
+export JOB_RUN_ID=00fdvr7mvngkk80a
+aws emr-serverless get-job-run --application-id $applicationId --job-run-id $JOB_RUN_ID
+```
+
+json format response is as below.
+
+```json
+{
+    "jobRun": {
+        "applicationId": "00fdt9vnqe0p7u09",
+        "jobRunId": "00fdvr7mvngkk80a",
+        "arn": "arn:aws:emr-serverless:us-east-1:<aws account id>:/applications/00fdt9vnqe0p7u09/jobruns/00fdvr7mvngkk80a",
+        "createdBy": "arn:aws:sts::<aws account id>:assumed-role/PVRE-SSMOnboardingRole-18MA0VH7VUPOT/i-02d63cbb7fef34323",
+        "createdAt": "2023-10-15T07:31:47.505000+00:00",
+        "updatedAt": "2023-10-15T07:33:07.475000+00:00",
+        "executionRole": "arn:aws:iam::<aws account id>:role/emr-serverless-job-role",
+        "state": "RUNNING",
+        "stateDetails": "",
+        "releaseLabel": "emr-6.6.0",
+        "configurationOverrides": {
+            "applicationConfiguration": [
+                {
+                    "classification": "hive-site",
+                    "properties": {
+                        "hive.tez.cpu.vcores": "4",
+                        "hive.driver.memory": "4g",
+                        "hive.driver.cores": "2",
+                        "hive.tez.container.size": "8192"
+                    }
+                }
+            ],
+            "monitoringConfiguration": {
+                "s3MonitoringConfiguration": {
+                    "logUri": "s3://<bucket name>/hive-logs/"
+                },
+                "managedPersistenceMonitoringConfiguration": {
+                    "enabled": true
+                }
+            }
+        },
+        "jobDriver": {
+            "hive": {
+                "query": "s3://<bucket name>/<specific prefix>/ingest_fdm_data.sql",
+                "initQueryFile": "s3://<bucket name>/<specific prefic>/create_fdm_table.sql",
+                "parameters": "--hiveconf hive.exec.scratchdir=s3://<bucket name>/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://<bucket name>/hive/warehouse"
+            }
+        },
+        "tags": {}
+    }
+}
+```
+if job success, the state will be "SUCCESS", if job fails, the state will be "FAILED", and reason why the job fails will be printed in the response for further debugging.
 
 ### 3.4 orchestrated by DolphinScheduler
 
