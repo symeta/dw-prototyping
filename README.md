@@ -31,9 +31,25 @@ Orchestrator wise, operation guidance of orchestrating athena query as well as h
 
 Customer is keen at finding out a way to know the resource consumption each end user consumes. As a result, the mechanism of both athena and emr serverless achieving this objective is introduced. (refer to 3.6, 3.7)
 
-Prototyping Architecture Diagram is shown as below:
+**Prototyping Architecture Diagram** 
+is shown as below:
 
 <img width="728" alt="image" src="https://github.com/symeta/dw-prototyping/assets/97269758/e36e2469-a5f3-492c-8dc8-3e2bc937faf0">
+
+**pre-requisites**
+- make sure the dev host has aws cli installed, to install aws cli, exec the cmd below
+
+```sh
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+aws configure
+#input IAM user's AK following the instruction guidance
+#input IAM user's SK following the instruction guidance
+#input region id that has enabled Bedrock, e.g. us-west-2
+```
+
 
 ### 3.1 athena query as dw tiering engine, data stored as csv
 - original csv data files uploaded to S3 bucket, via web console, or via command line.
@@ -223,7 +239,96 @@ the target data warehouse tiering job query result performance metrics are shown
 
 
 ### 3.3 hive query powered by emr serverless as dw tiering engine, data stored as parquet
+emr serverless way of operating hive application consists of the following steps: 
 
+- (1)create an IAM role that could enable the hive job access & operate relevant aws services; *one time execution* 
+- (2)create a hive application; *once created if no job submitted, not resource consumption*
+- (2)when the application state is "CREATED", start the application;
+- (3)when the application state is "STARTED", submit the hive job;
+- (4)when the job state is "Success", release the job;
+- (5)if the job state is "Failed", need to debug based on the log information. 
+
+**create IAM role**
+```sh
+aws iam create-role --role-name emr-serverless-job-role --assume-role-policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "emr-serverless.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }'
+```
+- attach the role with policy to enable S3 bucket access
+
+```sh
+export BUCKET-NAME=<specific bucket name>
+
+aws iam put-role-policy --role-name emr-serverless-job-role --policy-name S3Access --policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadFromOutputAndInputBuckets",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::BUCKET-NAME",
+                "arn:aws:s3:::BUCKET-NAME/*"
+            ]
+        },
+        {
+            "Sid": "WriteToOutputDataBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::BUCKET-NAME/*"
+            ]
+        }
+    ]
+}'
+```
+- attach the role with policy to enable Glue permission
+
+```sh
+aws iam put-role-policy --role-name emr-serverless-job-role --policy-name GlueAccess --policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "GlueCreateAndReadDataCatalog",
+        "Effect": "Allow",
+        "Action": [
+            "glue:GetDatabase",
+            "glue:GetDataBases",
+            "glue:CreateTable",
+            "glue:GetTable",
+            "glue:GetTables",
+            "glue:GetPartition",
+            "glue:GetPartitions",
+            "glue:UpdateTable",
+            "glue:CreatePartition",
+            "glue:BatchCreatePartition",
+            "glue:GetUserDefinedFunctions"
+        ],
+        "Resource": ["*"]
+      }
+    ]
+  }'
+```
+
+**create a hive application**
+```sh
+
+```
 
 ### 3.4 orchestrated by DolphinScheduler
 
