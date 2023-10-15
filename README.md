@@ -537,7 +537,7 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 
 orchestrating DAG diagram is shown as below.
 
-![dag](https://github.com/symeta/dw-prototyping/assets/97269758/afaf569d-e885-41ad-b7e4-88ad8e3920da)
+dag copy.png![image](https://github.com/symeta/dw-prototyping/assets/97269758/79a38760-193c-4313-9af0-43e43c87d928)
 
 - create hive app
 ```sh
@@ -656,15 +656,16 @@ aws emr-serverless stop-application --application-id $APPLICATION_ID
 aws emr-serverless delete-application --application-id $APPLICATION_ID
 ```
 
-### 3.5 orchestrated by Step Function
+### 3.5 orchestrated by Step Function (optional)
+
+TBW
 
 ### 3.6 resource consumption statistics if via athena
+in terms of resource consumption granularity, athena is by workgroup, meaning that each workgroup can be attached a specific cost allocation tag and resource consumption of this workgroup could be viewed via cost explorer as well as billing.
 
-resource consumption granularity:
-athena: by workgroup 
-emr serverless hive: by application, by job
 
 ### 3.7 resource consumotion statistics if via emr serverless
+in temrs of resource consumption granulartiy, emr serverless hive supports both by application and by job, meaning that either application or job can be attached a specific cost allocation tag and resource consumption of either an application or a job could be viewed via cost explorer as well as billing.
 
 ## 4 summary
 
