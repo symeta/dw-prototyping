@@ -324,6 +324,10 @@ aws iam put-role-policy --role-name emr-serverless-job-role --policy-name GlueAc
     ]
   }'
 ```
+- export the role's arn to be used in next step
+```sh
+export JOB_ROLE_ARN=arn:aws:iam::<aws account id>:role/emr-serverless-job-role
+```
 
 **create a hive application**
 ```sh
