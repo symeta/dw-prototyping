@@ -408,6 +408,7 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 
 orchestrating DAG diagram is shown as below.
 below steps show how to orchestrate emr serverless hive application. Orchestrating athena query is behind these steps.
+
 ![image](https://github.com/symeta/dw-prototyping/assets/97269758/79a38760-193c-4313-9af0-43e43c87d928)
 
 **orchestrate emr serverless hive application**
