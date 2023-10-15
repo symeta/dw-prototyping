@@ -519,6 +519,20 @@ json format response is as below.
 ```
 if job success, the state will be "SUCCESS", if job fails, the state will be "FAILED", and reason why the job fails will be printed in the response for further debugging.
 
+The job running status could be reviewed per below snapshot. Such metrics could be reviewed via the above "get-job-run" cmd also.
+
+<img width="1262" alt="Screenshot 2023-10-15 at 15 41 16" src="https://github.com/symeta/dw-prototyping/assets/97269758/c452a910-7bee-4e44-a54b-4afbc413082b">
+
+```json
+        "totalResourceUtilization": {
+            "vCPUHour": 1.097,
+            "memoryGBHour": 2.194,
+            "storageGBHour": 8.222
+        },
+        "totalExecutionDurationSeconds": 126
+```
+
+
 ### 3.4 orchestrated by DolphinScheduler
 
 ### 3.5 orchestrated by Step Function
