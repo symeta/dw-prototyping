@@ -535,6 +535,127 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 
 ### 3.4 orchestrated by DolphinScheduler
 
+orchestrating DAG diagram is shown as below.
+
+![dag](https://github.com/symeta/dw-prototyping/assets/97269758/afaf569d-e885-41ad-b7e4-88ad8e3920da)
+
+- create hive app
+```sh
+response1=$(aws emr-serverless create-application \
+  --type HIVE \
+  --name <specific application name> \ 
+  --release-label "emr-6.6.0" \
+  --initial-capacity '{
+        "DRIVER": {
+            "workerCount": 1,
+            "workerConfiguration": {
+                "cpu": "2vCPU",
+                "memory": "4GB",
+                "disk": "30gb"
+            }
+        },
+        "TEZ_TASK": {
+            "workerCount": 10,
+            "workerConfiguration": {
+                "cpu": "4vCPU",
+                "memory": "8GB",
+                "disk": "30gb"
+            }
+        }
+    }' \
+  --maximum-capacity '{
+        "cpu": "400vCPU",
+        "memory": "1024GB",
+        "disk": "1000GB"
+    }')
+
+#get applicationId from reponse
+applicationId=$(echo $response | jq -r '.applicationId')
+
+#store applicationId into redis
+redis-cli SET applicationId_LOB1 $applicationId
+```
+
+- check application state & start application & submit hive job
+```sh
+
+applicationId=$(redis cli GET applicationId_LOB1)
+
+app_state{
+  response2=$(aws emr-serverless get-application --application-id $applicationId)
+  application=$(echo $response1 | jq -r '.application')
+  state=$(echo $application | jq -r '.state')
+  return state
+}
+
+state=app_state()
+while [ $state!="CREATED" ]; do
+  state=app_state()
+done
+
+response2=$(emr-serverless start-application --application-id $applicationId)
+state=app_state()
+while [ $state!="STARTED" ]; do
+  state=app_state()
+done
+
+response3=$(aws emr-serverless start-job-run \
+    --application-id $applicationId \
+    --execution-role-arn $JOB_ROLE_ARN \
+    --job-driver '{
+        "hive": {
+            "initQueryFile": "s3://shiyang-noaa-gsod-pds/create_table_1.sql",
+            "query": "s3://shiyang-noaa-gsod-pds/extreme_weather_1.sql",
+            "parameters": "--hiveconf hive.exec.scratchdir=s3://shiyang-noaa-gsod-pds/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://shiyang-noaa-gsod-pds/hive/warehouse"
+        }
+    }' \
+    --configuration-overrides '{
+        "applicationConfiguration": [
+            {
+                "classification": "hive-site",
+                "properties": {
+                    "hive.driver.cores": "2",
+                    "hive.driver.memory": "4g",
+                    "hive.tez.container.size": "8192",
+                    "hive.tez.cpu.vcores": "4"
+                }
+            }
+        ],
+        "monitoringConfiguration": {
+            "s3MonitoringConfiguration": {
+                "logUri": "s3://shiyang-noaa-gsod-pds/hive-logs/"
+            }
+        }
+    }')
+
+JOB_RUN_ID=$(echo $response3 | jq -r '.jobRunId')
+
+#store job_run_id into redis
+redis-cli SET job_run_id_LOB1 $JOB_RUN_ID
+
+
+response4=$(aws emr-serverless get-job-run --application-id $applicationId --job-run-id $JOB_RUN_ID)
+
+jobRun=$(echo $response4 | jq -r '.jobRun')
+JOB_RUN_ID=$(echo $jobRun | jq -r '.jobRunId')
+JOB_STATE=$(echo $jobRun | jq -r '.state')
+```
+- release resource when job completed
+```sh
+JOB_RUN_ID=$(redis-cli GET job_run_id_LOB1)
+applicationId=$(redis-cli SET applicationID_LOB1)
+response4=$(aws emr-serverless get-job-run --application-id $applicationId --job-run-id $JOB_RUN_ID)
+
+jobRun=$(echo $response4 | jq -r '.jobRun')
+JOB_STATE=$(echo $jobRun | jq -r '.state')
+
+#if failed, send alert
+#if pending, send timeout alert
+#if success, release resource
+aws emr-serverless stop-application --application-id $APPLICATION_ID
+aws emr-serverless delete-application --application-id $APPLICATION_ID
+```
+
 ### 3.5 orchestrated by Step Function
 
 ### 3.6 resource consumption statistics if via athena
