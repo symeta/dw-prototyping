@@ -407,9 +407,10 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 ### 3.4 orchestrated by DolphinScheduler
 
 orchestrating DAG diagram is shown as below.
-
+below steps show how to orchestrate emr serverless hive application. Orchestrating athena query is behind these steps.
 ![image](https://github.com/symeta/dw-prototyping/assets/97269758/79a38760-193c-4313-9af0-43e43c87d928)
 
+**orchestrate emr serverless hive application**
 - create hive app
 ```sh
 response1=$(aws emr-serverless create-application \
@@ -526,6 +527,58 @@ JOB_STATE=$(echo $jobRun | jq -r '.state')
 aws emr-serverless stop-application --application-id $APPLICATION_ID
 aws emr-serverless delete-application --application-id $APPLICATION_ID
 ```
+
+**orchestrate athena query**
+```sh
+aws athena start-query-execution \
+    --query-string "select date, location, browser, uri, status from cloudfront_logs where method = 'GET' and status = 200 and location like 'SFO%' limit 10" \
+    --work-group "AthenaAdmin" 
+```
+get the response:
+```json
+{
+"QueryExecutionId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"
+}
+```
+could get query status by
+
+```sh
+aws athena get-query-execution \
+    --query-execution-id a1b2c3d4-5678-90ab-cdef-EXAMPLE11111
+```
+get the response:
+
+```json
+{
+    "QueryExecution": {
+        "QueryExecutionId": "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111",
+        "Query": "select date, location, browser, uri, status from cloudfront_logs where method = 'GET
+' and status = 200 and location like 'SFO%' limit 10",
+        "StatementType": "DML",
+        "ResultConfiguration": {
+            "OutputLocation": "s3://awsdoc-example-bucket/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111.csv"
+        },
+        "QueryExecutionContext": {
+            "Database": "mydatabase",
+            "Catalog": "awsdatacatalog"
+        },
+        "Status": {
+            "State": "SUCCEEDED",
+            "SubmissionDateTime": 1593469842.665,
+            "CompletionDateTime": 1593469846.486
+        },
+        "Statistics": {
+            "EngineExecutionTimeInMillis": 3600,
+            "DataScannedInBytes": 203089,
+            "TotalExecutionTimeInMillis": 3821,
+            "QueryQueueTimeInMillis": 267,
+            "QueryPlanningTimeInMillis": 1175
+        },
+        "WorkGroup": "AthenaAdmin"
+    }
+}
+```
+orchestrator can leverage on these commands as well as information to orchestrate.
 
 ### 3.5 orchestrated by Step Function (optional)
 
