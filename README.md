@@ -62,39 +62,7 @@ aws s3 cp cash_plus.am_deposit_withdrawal.csv s3://shiyang/dw/ods/raw/cash_plus/
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS `cash_plus_am_deposit_withdrawal`(
   `id` string, 
-  `uuid` string, 
-  `external_id` string, 
-  `order_id` string, 
-  `account` string, 
-  `sec_type` string, 
-  `product_id` string, 
-  `symbol` string, 
-  `direction` string, 
-  `seg_type` string, 
-  `currency` string, 
-  `trade_currency` string, 
-  `amount` string, 
-  `purchase_fee` string, 
-  `purchase_fee_gst` string, 
-  `trade_time` string, 
-  `effective_time` string, 
-  `priced_time` string, 
-  `nav` string, 
-  `nav_date` string, 
-  `shares` string, 
-  `avg_nav` string, 
-  `realized_pnl` string, 
-  `bs_id` string, 
-  `bs_time` string, 
-  `reason` string, 
-  `type` string, 
-  `payment_method` string,
-  `payment_detail` string,
-  `order_type` string,
-  `routing_key` string,
-  `oae_id` string,
-  `status` string,
-  `attrs` string,
+  ... ...
   `create_time` string,
   `update_time` string)
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
@@ -104,40 +72,7 @@ LOCATION 's3://shiyang/dw/ods/raw/cash_plus/am_deposit_withdrawal/'
 ```sql
 CREATE EXTERNAL TABLE `fdm_regular_saving_plan_order_a_d` (
   `pid` string, 
-  `order_id` string, 
-  `uuid` string, 
-  `omni_order_id` string, 
-  `account_id` string, 
-  `account` string, 
-  `sec_type` string, 
-  `product_id` string, 
-  `symbol` string, 
-  `direction` string, 
-  `seg_type` string, 
-  `currency` string, 
-  `amount` string, 
-  `purchase_fee` string, 
-  `purchase_fee_gst` string, 
-  `trade_time` string, 
-  `effective_time` string, 
-  `priced_time` string, 
-  `nav` string, 
-  `nav_date` string, 
-  `shares` string, 
-  `avg_nav` string, 
-  `realized_pnl` string, 
-  `bs_id` string, 
-  `bs_time` string, 
-  `reason` string, 
-  `type` string, 
-  `payment_method` string,
-  `payment_detail` string,
-  `status` string,
-  `rsp_id` string,
-  `rsp_order_type` string,
-  `rsp_order_status` string,
-  `create_time` string,
-  `update_time` string,
+  ... ...
   `is_rsp_order` int,
   `data_flag` string)
 STORED AS parquet
@@ -153,39 +88,7 @@ the target data warehouse tiering job query result performance metrics are shown
 # parquet table DDL, for large files, consider leveraging on partition.
 CREATE EXTERNAL TABLE `parquet_cash_plus_am_deposit_withdrawal` (
   `id` string, 
-  `uuid` string, 
-  `external_id` string, 
-  `order_id` string, 
-  `account` string, 
-  `sec_type` string, 
-  `product_id` string, 
-  `symbol` string, 
-  `direction` string, 
-  `seg_type` string, 
-  `currency` string, 
-  `trade_currency` string, 
-  `amount` string, 
-  `purchase_fee` string, 
-  `purchase_fee_gst` string, 
-  `trade_time` string, 
-  `effective_time` string, 
-  `priced_time` string, 
-  `nav` string, 
-  `nav_date` string, 
-  `shares` string, 
-  `avg_nav` string, 
-  `realized_pnl` string, 
-  `bs_id` string, 
-  `bs_time` string, 
-  `reason` string, 
-  `type` string, 
-  `payment_method` string,
-  `payment_detail` string,
-  `order_type` string,
-  `routing_key` string,
-  `oae_id` string,
-  `status` string,
-  `attrs` string,
+  ... ...
   `create_time` string,
   `update_time` string) 
 PARTITIONED BY (data_year string) #set year as partition
@@ -195,39 +98,7 @@ LOCATION 's3://shiyang-noaa-gsod-pds/dw/ods/parquet/cash_plus/am_deposit_withdra
 #ingest data from csv data file to parquet data file
 INSERT INTO parquet_cash_plus_am_deposit_withdrawal
 SELECT id, 
-  uuid, 
-  external_id, 
-  order_id, 
-  account, 
-  sec_type, 
-  product_id, 
-  symbol, 
-  direction, 
-  seg_type, 
-  currency, 
-  trade_currency, 
-  amount, 
-  purchase_fee, 
-  purchase_fee_gst, 
-  trade_time, 
-  effective_time, 
-  priced_time, 
-  nav, 
-  nav_date, 
-  shares, 
-  avg_nav, 
-  realized_pnl, 
-  bs_id, 
-  bs_time, 
-  reason, 
-  type, 
-  payment_method,
-  payment_detail,
-  order_type,
-  routing_key,
-  oae_id,
-  status,
-  attrs,
+  ... ...
   create_time,
   update_time,
   split_part(create_time,'-', 1) as data_year
@@ -365,7 +236,7 @@ after executing the cmd, a json response will return as below
 ```json
 {
     "applicationId": "00et0f0b79s06o09",
-    "arn": "arn:aws:emr-serverless:us-west-2:<aws account id>:/applications/00et0f0b79s06o09",
+    "arn": "arn:aws:emr-serverless:us-east-1:<aws account id>:/applications/00et0f0b79s06o09",
     "name": <specific application name>
 }
 ```
@@ -422,7 +293,7 @@ response like below could be acquired.
     }
 }
 ```
-if the "state" is "STRARTED", could further submit the hive job.
+if the "state" is "STARTED", could further submit the hive job.
 
 - submit the hive job
 ```sh
@@ -433,7 +304,7 @@ aws emr-serverless start-job-run \
         "hive": {
             "initQueryFile": "s3://<bucket name>/<specific prefix>/create_fdm_table.sql", #DDL SQL for instance
             "query": "s3://<bucket name>/<specific prefix>/ingest_fdm_data.sql", #DML SQL for instance
-            "parameters": "--hiveconf hive.exec.scratchdir=s3://shiyang-noaa-gsod-pds/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://<bucket name>/hive/warehouse"
+            "parameters": "--hiveconf hive.exec.scratchdir=s3://<bucket name>/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://<bucket name>/hive/warehouse"
         }
     }' \
     --configuration-overrides '{
@@ -461,7 +332,7 @@ the json formate response is as below.
 {
     "applicationId": "00fdt9vnqe0p7u09",
     "jobRunId": "00fdvr7mvngkk80a",
-    "arn": "arn:aws:emr-serverless:us-east-1:324874492192:/applications/00fdt9vnqe0p7u09/jobruns/00fdvr7mvngkk80a"
+    "arn": "arn:aws:emr-serverless:us-east-1:<aws account id>:/applications/00fdt9vnqe0p7u09/jobruns/00fdvr7mvngkk80a"
 }
 ```
 execute the follow cmd to check the state of the job.
@@ -537,7 +408,7 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 
 orchestrating DAG diagram is shown as below.
 
-dag copy.png![image](https://github.com/symeta/dw-prototyping/assets/97269758/79a38760-193c-4313-9af0-43e43c87d928)
+![image](https://github.com/symeta/dw-prototyping/assets/97269758/79a38760-193c-4313-9af0-43e43c87d928)
 
 - create hive app
 ```sh
@@ -606,7 +477,7 @@ response3=$(aws emr-serverless start-job-run \
         "hive": {
             "initQueryFile": "s3://shiyang-noaa-gsod-pds/create_table_1.sql",
             "query": "s3://shiyang-noaa-gsod-pds/extreme_weather_1.sql",
-            "parameters": "--hiveconf hive.exec.scratchdir=s3://shiyang-noaa-gsod-pds/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://shiyang-noaa-gsod-pds/hive/warehouse"
+            "parameters": "--hiveconf hive.exec.scratchdir=s3://<bucket name>/hive/scratch --hiveconf hive.metastore.warehouse.dir=s3://<bucket name>/hive/warehouse"
         }
     }' \
     --configuration-overrides '{
@@ -623,7 +494,7 @@ response3=$(aws emr-serverless start-job-run \
         ],
         "monitoringConfiguration": {
             "s3MonitoringConfiguration": {
-                "logUri": "s3://shiyang-noaa-gsod-pds/hive-logs/"
+                "logUri": "s3://<bucket name>/hive-logs/"
             }
         }
     }')
@@ -666,7 +537,7 @@ in terms of resource consumption granularity, athena is by workgroup, meaning th
 athena workgroup could be tagged via cmd as below:
 ```sh
 aws athena tag-resource \
-    --resource-arn arn:aws:athena:us-east-1:324874492192:workgroup/primary \
+    --resource-arn arn:aws:athena:us-east-1:<aws account id>:workgroup/primary \
     --tags Key=CostCenter,Value=123
 ```
 after cost allocation tag is created, it should be activated in Billing Console --> Cost Allocation Tags
@@ -682,6 +553,12 @@ emr serverless hive application and job could be tagged via creation.
 ```
 
 ## 4 summary
+- the raw data volume is 450MB in csv format. If stored as parquet, 75MB. Compression Ratio can achieve to 6
+- the target data warehouse tiering job is completed in 4.626 seconds via athena, with data stored as parquet
+- the same job is completed in 5.489 seconds via athena, with data stored as csv
+- the same job is complted in 2 minutes via emr serverless hive application
 
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
+
+TBW
