@@ -610,7 +610,13 @@ emr serverless hive application and job could be tagged via creation.
 - the target data warehouse tiering job is completed in 4.626 seconds via athena, with data stored as parquet
 - the same job is completed in 5.489 seconds via athena, with data stored as csv
 - the same job is complted in 2 minutes via emr serverless hive application
+- athena query is easier to be orchestrated than emr serverless hive application
 
+As a result, it is recommended:
+- to use parquet to store data;
+- to leverage on athena as the data warehouse tiering engine from a performance perspective.
+
+Cost analysis TBW.
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
 
