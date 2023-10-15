@@ -615,7 +615,7 @@ emr serverless hive application and job could be tagged via creation.
 
 As a result, it is recommended:
 - to use parquet to store data;
-- to leverage on athena as the data warehouse tiering engine from a performance perspective.
+- to leverage on athena as the data warehouse tiering engine from a performance and ease-of-operation perspective.
 
 Cost analysis TBW.
 
