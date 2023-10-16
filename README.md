@@ -76,7 +76,7 @@ CREATE EXTERNAL TABLE `fdm_regular_saving_plan_order_a_d` (
   `is_rsp_order` int,
   `data_flag` string)
 STORED AS parquet
-LOCATION 's3://shiyang-noaa-gsod-pds/dw/fdm/'
+LOCATION 's3://shiyang/dw/fdm/'
 ```
 the target data warehouse tiering job query result performance metrics are shown as below.
 
@@ -93,7 +93,7 @@ CREATE EXTERNAL TABLE `parquet_cash_plus_am_deposit_withdrawal` (
   `update_time` string) 
 PARTITIONED BY (data_year string) #set year as partition
 STORED AS parquet
-LOCATION 's3://shiyang-noaa-gsod-pds/dw/ods/parquet/cash_plus/am_deposit_withdrawal/'
+LOCATION 's3://shiyang/dw/ods/parquet/cash_plus/am_deposit_withdrawal/'
 
 #ingest data from csv data file to parquet data file
 INSERT INTO parquet_cash_plus_am_deposit_withdrawal
