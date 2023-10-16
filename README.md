@@ -326,7 +326,7 @@ aws emr-serverless start-job-run \
         }
     }'
 ```
-the json formate response is as below.
+the json format response is as below.
 
 ```json
 {
