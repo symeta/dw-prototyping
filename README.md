@@ -605,6 +605,18 @@ emr serverless hive application and job could be tagged via creation.
     "CostCenter": "123"
   }'
 ```
+### 3.7 cost analysis
+
+- athena cost analysis
+
+<img width="1096" alt="Screenshot 2023-10-16 at 10 51 13" src="https://github.com/symeta/dw-prototyping/assets/97269758/314e8d93-a9ae-40f8-b774-66f93032104f">
+
+- emr serverless hive cost analysis
+
+Oct.15th data should be more accurate, job submitted only once. During testing on Oct.12nd, several tests has been done, as a result, data for Oct.12nd is multiple times of the accurate cost.
+
+<img width="1099" alt="Screenshot 2023-10-16 at 10 52 03" src="https://github.com/symeta/dw-prototyping/assets/97269758/82d3f358-e5a8-4b43-95f3-06407b8988ab">
+
 
 ## 4 summary
 - the raw data volume is 450MB in csv format. If stored as parquet, 75MB. Compression Ratio can achieve to 6
@@ -612,12 +624,11 @@ emr serverless hive application and job could be tagged via creation.
 - the same job is completed in 5.489 seconds via athena, with data stored as csv
 - the same job is complted in 2 minutes via emr serverless hive application
 - athena query is easier to be orchestrated than emr serverless hive application
+- cost wise, athena is more cost-performant than emr serverless hive application
 
 As a result, it is recommended:
 - to use parquet to store data;
-- to leverage on athena as the data warehouse tiering engine from a performance and ease-of-operation perspective.
-
-Cost analysis TBW.
+- to leverage on athena as the data warehouse tiering engine from a cost, performance as well as ease-of-operation perspective.
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
 
