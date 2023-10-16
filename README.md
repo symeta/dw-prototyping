@@ -605,7 +605,7 @@ emr serverless hive application and job could be tagged via creation.
     "CostCenter": "123"
   }'
 ```
-### 3.7 cost analysis
+### 3.8 cost analysis
 
 - athena cost analysis
 
