@@ -1,15 +1,16 @@
 # Phase One: FDM Job
 
 In order to showcase the benefits of the to-be-upgraded data warehouse, three usecases have been tested, namely:
-- athena query as dw tiering engine, data stored as csv; (refer to 3.1)
-- athena query as dw tiering engine, data stored as parquet; (refer to 3.2)
-- hive query powered by emr serverless as dw tiering engine, data stored as parquet. (refer to 3.3)
+- athena query as dw tiering engine, data stored as csv; (refer to 3.1.1)
+- athena query as dw tiering engine, data stored as parquet; (refer to 3.1.2)
+- hive query powered by emr serverless as dw tiering engine, data stored as parquet. (refer to 3.1.3)
 
-Orchestrator wise, operation guidance of orchestrating athena query as well as hive application via DolphinScheduler is provided. Step Function way is discussed. (refer to 3.4, 3.5)
+Orchestrator wise, operation guidance of orchestrating athena query as well as hive application via DolphinScheduler is provided. Step Function way is discussed. (refer to 3.1.4, 3.1.5)
 
-Customer is keen at finding out a way to know the resource consumption each end user consumes. As a result, the mechanism of both athena and emr serverless achieving this objective is introduced. (refer to 3.6, 3.7)
+Customer is keen at finding out a way to know the resource consumption each end user consumes. As a result, the mechanism of both athena and emr serverless achieving this objective is introduced. (refer to 3.1.6, 3.1.7)
 
 **Prototyping Architecture Diagram** 
+
 is shown as below:
 
 <img width="728" alt="image" src="https://github.com/symeta/dw-prototyping/assets/97269758/e36e2469-a5f3-492c-8dc8-3e2bc937faf0">
@@ -29,7 +30,7 @@ aws configure
 ```
 
 
-### 3.1 athena query as dw tiering engine, data stored as csv
+### 3.1.1 athena query as dw tiering engine, data stored as csv
 - original csv data files uploaded to S3 bucket, via web console, or via command line.
 ```sh
 aws s3 cp <csv data file> s3://<s3 bucket>/<specific prefix>/<csv data file>
@@ -60,7 +61,7 @@ the target data warehouse tiering job query result performance metrics are shown
 
 <img width="518" alt="Screenshot 2023-10-14 at 22 13 51" src="https://github.com/symeta/dw-prototyping/assets/97269758/501c82f8-c5ee-4afb-a618-cf6dc297be46">
 
-### 3.2 athena query as dw tiering engine, data stored as parquet
+### 3.1.2 athena query as dw tiering engine, data stored as parquet
 - convert csv data file to parquet data file
 ```sql
 # parquet table DDL, for large files, consider leveraging on partition.
@@ -87,7 +88,7 @@ the target data warehouse tiering job query result performance metrics are shown
 <img width="511" alt="Screenshot 2023-10-14 at 22 23 55" src="https://github.com/symeta/dw-prototyping/assets/97269758/daa62fc6-32cb-4408-bf81-4d964c54a12c">
 
 
-### 3.3 hive query powered by emr serverless as dw tiering engine, data stored as parquet
+### 3.1.3 hive query powered by emr serverless as dw tiering engine, data stored as parquet
 emr serverless way of operating hive application consists of the following steps: 
 
 - (1)create an IAM role that could enable the hive job access & operate relevant aws services; *one time execution* 
@@ -115,8 +116,6 @@ aws iam create-role --role-name emr-serverless-job-role --assume-role-policy-doc
 - attach the role with policy to enable S3 bucket access
 
 ```sh
-export BUCKET-NAME=<specific bucket name>
-
 aws iam put-role-policy --role-name emr-serverless-job-role --policy-name S3Access --policy-document '{
     "Version": "2012-10-17",
     "Statement": [
@@ -128,8 +127,8 @@ aws iam put-role-policy --role-name emr-serverless-job-role --policy-name S3Acce
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::BUCKET-NAME",
-                "arn:aws:s3:::BUCKET-NAME/*"
+                "arn:aws:s3:::<specific bucket name>",
+                "arn:aws:s3:::<specific bucket name>/*"
             ]
         },
         {
@@ -140,7 +139,7 @@ aws iam put-role-policy --role-name emr-serverless-job-role --policy-name S3Acce
                 "s3:DeleteObject"
             ],
             "Resource": [
-                "arn:aws:s3:::BUCKET-NAME/*"
+                "arn:aws:s3:::<specific bucket name>/*"
             ]
         }
     ]
@@ -382,7 +381,7 @@ The job running status could be reviewed per below snapshot. Such metrics could 
 ```
 
 
-### 3.4 orchestrated by DolphinScheduler
+### 3.1.4 orchestrated by DolphinScheduler
 
 orchestrating DAG diagram is shown as below.
 below steps show how to orchestrate emr serverless hive application. Orchestrating athena query is behind these steps.
@@ -559,11 +558,11 @@ get the response:
 ```
 orchestrator can leverage on these commands as well as information to orchestrate.
 
-### 3.5 orchestrated by Step Function (optional)
+### 3.1.5 orchestrated by Step Function (optional)
 
 TBW
 
-### 3.6 resource consumption statistics if via athena
+### 3.1.6 resource consumption statistics if via athena
 in terms of resource consumption granularity, athena is by workgroup, meaning that each workgroup can be attached a specific cost allocation tag and resource consumption of this workgroup could be viewed via cost explorer as well as billing.
 
 athena workgroup could be tagged via cmd as below:
@@ -574,7 +573,7 @@ aws athena tag-resource \
 ```
 after cost allocation tag is created, it should be activated in Billing Console --> Cost Allocation Tags
 
-### 3.7 resource consumotion statistics if via emr serverless
+### 3.1.7 resource consumotion statistics if via emr serverless
 in temrs of resource consumption granulartiy, emr serverless hive supports both by application and by job, meaning that either application or job can be attached a specific cost allocation tag and resource consumption of either an application or a job could be viewed via cost explorer as well as billing.
 
 emr serverless hive application and job could be tagged via creation.
@@ -583,7 +582,7 @@ emr serverless hive application and job could be tagged via creation.
     "CostCenter": "123"
   }'
 ```
-### 3.8 cost analysis
+### 3.1.8 cost analysis
 
 - athena cost analysis
 
@@ -596,7 +595,7 @@ Oct.15th data should be more accurate, job submitted only once. During testing o
 <img width="1099" alt="Screenshot 2023-10-16 at 10 52 03" src="https://github.com/symeta/dw-prototyping/assets/97269758/82d3f358-e5a8-4b43-95f3-06407b8988ab">
 
 
-## 4 summary
+## 3.1.9 summary
 - the raw data volume is 450MB in csv format. If stored as parquet, 75MB. Compression Ratio can achieve to 6
 - the target data warehouse tiering job is completed in 4.626 seconds via athena, with data stored as parquet
 - the same job is completed in 5.489 seconds via athena, with data stored as csv
@@ -608,6 +607,3 @@ As a result, it is recommended:
 - to use parquet to store data;
 - to leverage on athena as the data warehouse tiering engine from a cost, performance as well as ease-of-operation perspective.
 
-## appendix: DolphinScheduler pseudo cluster installation guidance
-
-TBW
