@@ -22,6 +22,8 @@ customer is familiar with hive as well as impala, as a result, hive application 
 DolphinScheduler remains to be the job orchestrator, since customer is familiar with its operations. While Step Function which is an aws native job orchestrator is suggested.
 
 ## 3. Prototyping Detail
+
+[3.1 Phase One: FDM Job](https://github.com/symeta/dw-prototyping/blob/phase1/README.md)
 In order to showcase the benefits of the to-be-upgraded data warehouse, three usecases have been tested, namely:
 - athena query as dw tiering engine, data stored as csv; (refer to 3.1)
 - athena query as dw tiering engine, data stored as parquet; (refer to 3.2)
