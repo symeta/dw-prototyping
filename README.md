@@ -37,3 +37,7 @@ The query performance of the GDM job via EMR Serverless hive is shown as per bel
 
 
 <img width="985" alt="Screenshot 2023-10-22 at 15 12 04" src="https://github.com/symeta/dw-prototyping/assets/97269758/aa57b2bb-82ae-4de2-b801-51d63eefa8f3">
+
+### 3.2.4 Cost Analysis
+
+TBW
