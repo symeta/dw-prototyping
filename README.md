@@ -11,8 +11,8 @@
   <img width="1108" alt="Screenshot 2023-10-29 at 09 41 11" src="https://github.com/symeta/dw-prototyping/assets/97269758/5dfda7a0-a102-4476-a46a-3ed88c337a6e">
 
 - create a permission policy named **gdm-access-test**
-  
-  <img width="1101" alt="Screenshot 2023-10-29 at 09 42 22" src="https://github.com/symeta/dw-prototyping/assets/97269758/313a96d7-89ad-4512-bdf1-8c5bae8252fb">
+
+  <img width="1101" alt="278846702-313a96d7-89ad-4512-bdf1-8c5bae8252fb" src="https://github.com/symeta/dw-prototyping/assets/97269758/833c7c4c-eed5-40e5-aac7-936806e8df69">
 
   with the specific json statement as per below:
   ```json
