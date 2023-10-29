@@ -27,6 +27,8 @@ DolphinScheduler remains to be the job orchestrator, since customer is familiar 
 
 [3.2 Phase Two: GDM Job](https://github.com/symeta/dw-prototyping/blob/phase2/README.md)
 
+[3.3 Phase Three: Table Level Permission Control](https://github.com/symeta/dw-prototyping/blob/phase3/README.md)
+
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
 
