@@ -83,5 +83,13 @@
 
 ## 3.3.3 Permission Control Showcase
 
+- login in as IAM user **dw-user1**
+- open athena console, only table **dim_date** of database **gdm_dw** of datacatalog **AwsDataCatalog** under workgroup **primary** is visible
+
+  <img width="1009" alt="Screenshot 2023-10-29 at 10 32 40" src="https://github.com/symeta/dw-prototyping/assets/97269758/42c2f2cc-c231-4b19-83c2-ccea5fa00a59">
+
+- run a query to showcase the **dw-user1** operates tabe **dim_date**
+
+  <img width="1148" alt="Screenshot 2023-10-29 at 10 35 12" src="https://github.com/symeta/dw-prototyping/assets/97269758/fe732924-2180-4757-b995-faa1e9f9ec8d">
 
 
