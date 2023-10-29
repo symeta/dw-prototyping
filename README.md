@@ -54,9 +54,9 @@
             "Effect": "Allow",
             "Action": "glue:*",
             "Resource": [
-                "arn:aws:glue:*:135709585800:catalog",
-                "arn:aws:glue:us-west-2:135709585800:table/gdm_dw/dim_date",
-                "arn:aws:glue:us-west-2:135709585800:database/gdm_dw"
+                "arn:aws:glue:*:<aws account id>:catalog",
+                "arn:aws:glue:us-west-2:<aws account id>:table/gdm_dw/dim_date",
+                "arn:aws:glue:us-west-2:<aws account id>:database/gdm_dw"
             ]
         },
         {
@@ -64,12 +64,12 @@
             "Effect": "Allow",
             "Action": "athena:*",
             "Resource": [
-                "arn:aws:athena:us-west-2:135709585800:datacatalog/AwsDataCatalog",
-                "arn:aws:athena:us-west-2:135709585800:workgroup/primary"
+                "arn:aws:athena:us-west-2:<aws account id>:datacatalog/AwsDataCatalog",
+                "arn:aws:athena:us-west-2:<aws account id>:workgroup/primary"
             ]
         }
-    ]
-}
+     ]
+  }
   ```
   
 - attach policy gdm-access-test to user group **athena-gdm-dw-dim-date**
