@@ -29,7 +29,7 @@ DolphinScheduler remains to be the job orchestrator, since customer is familiar 
 
 [3.3 Phase Three: Table Level Permission Control](https://github.com/symeta/dw-prototyping/blob/phase3/README.md)
 
-[3.4 Phase Four; DolphinScheduler Migration](https://github.com/symeta/dw-prototyping/blob/phase-4/README.md)
+[3.4 Phase Four: DolphinScheduler Migration](https://github.com/symeta/dw-prototyping/blob/phase-4/README.md)
 
 
 ## appendix: DolphinScheduler pseudo cluster installation guidance
