@@ -5,4 +5,8 @@
 var=$(cat applicationlist.txt|grep appid1)
 applicationId=${var#* }
 echo $applicationId
+
+applicationId=${$(cat applicationlist.txt|grep appid1)#* }
+echo $applicationId
+
 ```
