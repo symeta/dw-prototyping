@@ -35,6 +35,7 @@ cp mysql-connector-j-8.0.31/mysql-connector-j-8.0.31.jar ./apache-dolphinschedul
 ```
 ## provision an RDS for mysql instance via aws console
 
+## configure the mysql instance as per below instruction
 ```sh
 mysql> CREATE DATABASE dolphinscheduler DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci; 
 
@@ -58,4 +59,22 @@ bash apache-dolphinscheduler/tools/bin/upgrade-schema.sh
 
 ```
 
+## amend install_env.sh as per below instruction
+```sh
+cd /usr/local/src/apache-dolphinscheduler
+vim bin/env/install_env.sh 
+
+# 替换 IP 为 DolphinScheduler 所部署 EC2 私有 IP 地址  
+172.31.13.244
+ips=${ips:-"172.31.13.244"}  
+masters=${masters:-"172.31.13.244"}
+workers=${workers:-"172.31.13.244:default"}
+alertServer=${alertServer:-"172.31.13.244"}
+apiServers=${apiServers:-"172.31.13.244"}
+installPath=${installPath:-"~/dolphinscheduler"}  
+```
+
+## visit ds console
+http://<ec2 public dns endpoint>:12345/dolphinscheduler/ui/login
+初始用户名/密码 admin/dolphinscheduler123
 
