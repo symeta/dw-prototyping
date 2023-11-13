@@ -75,6 +75,6 @@ installPath=${installPath:-"~/dolphinscheduler"}
 ```
 
 ## visit ds console
-http://<ec2 public dns endpoint>:12345/dolphinscheduler/ui/login
-初始用户名/密码 admin/dolphinscheduler123
+- http://<ec2 public dns endpoint>:12345/dolphinscheduler/ui/login
+- 初始用户名/密码 admin/dolphinscheduler123
 
