@@ -21,10 +21,39 @@ app_state
   echo $state
 }
 
-state=$(app_state)
+job_state
+{
+  response4=$(aws emr-serverless get-job-run --application-id $applicationId --job-run-id $JOB_RUN_ID)
+  jobRun=$(echo $response4 | jq -r '.jobRun')
+  JOB_RUN_ID=$(echo $jobRun | jq -r '.jobRunId')
+  JOB_STATE=$(echo $jobRun | jq -r '.state')
+  echo $JOB_STATE
+}
 
-while [ $state!="SUCCESS"]; do
-  sleep 10
+state=$(job_state)
+
+while [ $state != "SUCCESS" ]; do
+  case $state in
+    RUNNING)
+         state=$(job_state)
+         ;;
+    SCHEDULED)
+         state=$(job_state)
+         ;;
+    PENDING)
+         state=$(job_state)
+         ;;
+    FAILED
+         break
+         ;;
+   esac
 done
+
+if [ $state == "FAILED" ]
+then
+  false
+else
+  true
+fi
 
 ```
