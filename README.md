@@ -1,37 +1,68 @@
-# dw-prototyping
+# Phase Five: EMR Serverless Spark Job 
 
-## 1. workload pattern description
+## 1. submit JAR file mode
 
-**data warehouse production workload pattern**
-- data warehouse tiering processes T+1 data in batch;
-- 4 layers of the data warehouse;
-- data warehouse tiering jobs take place during 1am and 5am per day;
-- data warehouse processing engine currently leverages on hive, managed by HUE, job orchestrated by DolphinScheduler;
+- scala source code
 
-**data warehouse consumption workload pattern**
-- end users view reports generated via data warehouse per week/month;
-- end users query the tables of the data warehouse ad-hoc;
-- query engine currently leverages on impala
+```scala
 
-## 2. data warehouse tech architecture consideration
+package com.shiyang
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
-the existing data warehouse is sitting on a long provisioned CDH cluster. Since the batch data processing workload lasts 5 hours per day during mid-night, with end user ad-hoc query follows a quite sparse pattern, it is recommended that the to-be-upgraded data warehouse leverages on serverless engine to achieve a cost performant way of building data warehouse.
+object Main  {
 
-customer is familiar with hive as well as impala, as a result, hive application @ emr serverless, as well as athena are considered as the processing as well as query engine of the to-be-upgraded data warehouse.
+  def main(args: Array[String]): Unit = {
 
-DolphinScheduler remains to be the job orchestrator, since customer is familiar with its operations. While Step Function which is an aws native job orchestrator is suggested.
+    val spark = SparkSession.builder()
+      .appName("shiyang1")
+      .enableHiveSupport()
+      .getOrCreate()
 
-## 3. Prototyping Detail
+    spark.sql("show databases").show()
+    spark.close()
+  }
 
-[3.1 Phase One: FDM Job](https://github.com/symeta/dw-prototyping/blob/phase1/README.md)
+}
+```
 
-[3.2 Phase Two: GDM Job](https://github.com/symeta/dw-prototyping/blob/phase2/README.md)
+- aws cli submit spark JAR job
 
-[3.3 Phase Three: Table Level Permission Control](https://github.com/symeta/dw-prototyping/blob/phase3/README.md)
+```sh
 
-[3.4 Phase Four: DolphinScheduler Migration](https://github.com/symeta/dw-prototyping/blob/phase-4/README.md)
+aws emr-serverless start-job-run \
+    --application-id application-id \
+    --execution-role-arn job-role-arn \
+    --job-driver '{
+        "sparkSubmit": {
+            "entryPoint": "s3://<s3 bucekt>/scripts/***.jar",
+            "sparkSubmitParameters": "--conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory --conf spark.driver.cores=1 --conf spark.driver.memory=3g --conf spark.executor.cores=4 --conf spark.executor.memory=3g"
+        }
+    }'
 
-[3.5 Phase Five: EMR Serverless Spark Job]()
+```
 
-[appendix: DolphinScheduler pseudo cluster installation guidance](https://github.com/symeta/dw-prototyping/blob/ds-installation/README.md)
+- sbt build.sbt config
+
+```txt
+scalaVersion := "2.13.8"
+val sparkVersion = "3.2.1"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % sparkVersion % "provided"
+
+name := "scala-glue"
+organization := "com.shiyang"
+version := "1.0.1"
+
+```
+
+- sbt command
+
+```sh
+sbt clean
+sbt package
+
+```
+sbt project build guidance:
+https://www.youtube.com/watch?v=0yyw2gD0SrY
+
+
 
