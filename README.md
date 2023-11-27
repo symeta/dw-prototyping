@@ -43,7 +43,7 @@ while [ $state != "SUCCESS" ]; do
     PENDING)
          state=$(job_state)
          ;;
-    FAILED
+    FAILED)
          break
          ;;
    esac
