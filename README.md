@@ -31,7 +31,7 @@ DolphinScheduler remains to be the job orchestrator, since customer is familiar 
 
 [3.4 Phase Four: DolphinScheduler Migration](https://github.com/symeta/dw-prototyping/blob/phase-4/README.md)
 
-[3.5 Phase Five: EMR Serverless Spark Job]()
+[3.5 Phase Five: EMR Serverless Spark Job](https://github.com/symeta/dw-prototyping/blob/phase5/README.md)
 
 [appendix: DolphinScheduler pseudo cluster installation guidance](https://github.com/symeta/dw-prototyping/blob/ds-installation/README.md)
 
