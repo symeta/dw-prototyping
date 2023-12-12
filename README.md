@@ -1,4 +1,4 @@
-# Phase Five: EMR Serverless Spark Job 
+# Phase Six: EMR Serverless Spark Job - Glue Table as Source, TiDB Table as Destination 
 
 ## 1. submit JAR file mode
 
