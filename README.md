@@ -20,14 +20,16 @@ object Main  {
 
     spark.sql("show databases").show()
     spark.sql("use default")
-    df=spark.sql("select * from testspark")
+    var df=spark.sql("select * from testspark")
 
-    df.write.format("jdbc").options(
-      driver="com.mysql.cj.jdbc.Driver",
-      url="jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test",
-      dbtable="testtable3",
-      user="3JePguGPZ9f8CHv.root",
-      password="DIkq8yg8wjXbAhqb").save()
+    df.write
+      .format("jdbc")
+      .option("driver","com.mysql.cj.jdbc.Driver")
+      .option("url", "jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test")
+      .option("dbtable", "testtable3")
+      .option("user", "3JePguGPZ9f8CHv.root")
+      .option("password", "DIkq8yg8wjXbAhqb")
+      .save()
 
     spark.close()
   }
@@ -39,12 +41,16 @@ object Main  {
 
 ```sh
 
+export applicationId=00fev6mdk45i8709
+
+export job_role_arn=arn:aws:iam::135709585800:role/emr-serverless-job-role
+
 aws emr-serverless start-job-run \
-    --application-id application-id \
-    --execution-role-arn job-role-arn \
+    --application-id $applicationId \
+    --execution-role-arn $job_role_arn \
     --job-driver '{
         "sparkSubmit": {
-            "entryPoint": "s3://<s3 bucekt>/scripts/***.jar",
+            "entryPoint": "s3://spark-sql-test-nov23rd/scripts/dec13-1/scala-glue_2.13-1.0.1.jar",
             "sparkSubmitParameters": "--conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory --conf spark.driver.cores=1 --conf spark.driver.memory=3g --conf spark.executor.cores=4 --conf spark.executor.memory=3g --jars s3://spark-sql-test-nov23rd/mysql-connector-j-8.2.0.jar"
         }
     }'
