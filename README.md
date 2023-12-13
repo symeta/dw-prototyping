@@ -33,5 +33,7 @@ DolphinScheduler remains to be the job orchestrator, since customer is familiar 
 
 [3.5 Phase Five: EMR Serverless Spark Job](https://github.com/symeta/dw-prototyping/blob/phase5/README.md)
 
+[3.6 Phase Six: EMR Serverless Spark Job - Glue Table as Source, TiDB Table as Destination](https://github.com/symeta/dw-prototyping/blob/phase6/README.md)
+
 [appendix: DolphinScheduler pseudo cluster installation guidance](https://github.com/symeta/dw-prototyping/blob/ds-installation/README.md)
 
