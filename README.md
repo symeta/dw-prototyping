@@ -88,3 +88,8 @@ https://www.youtube.com/watch?v=0yyw2gD0SrY
 * choose private subnet
 * create NAT GW of the subnet, or make sure that the destination table is reachable
 ```
+- TiDB Configuration
+
+```sh
+set global tidb_skip_isolation_level_check=1;
+```
