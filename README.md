@@ -27,8 +27,8 @@ object Main  {
       .option("driver","com.mysql.cj.jdbc.Driver")
       .option("url", "jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test")
       .option("dbtable", "testtable3")
-      .option("user", "3JePguGPZ9f8CHv.root")
-      .option("password", "DIkq8yg8wjXbAhqb")
+      .option("user", "3Je***.root")
+      .option("password", "DIk***")
       .save()
 
     spark.close()
@@ -41,9 +41,9 @@ object Main  {
 
 ```sh
 
-export applicationId=00fev6mdk45i8709
+export applicationId=00fev6mdk***
 
-export job_role_arn=arn:aws:iam::135709585800:role/emr-serverless-job-role
+export job_role_arn=arn:aws:iam::<aws account id>:role/emr-serverless-job-role
 
 aws emr-serverless start-job-run \
     --application-id $applicationId \
