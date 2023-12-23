@@ -99,7 +99,7 @@ if __name__ == "__main__":
         .enableHiveSupport()\
         .getOrCreate()
 
-    df=spark.sql("select * from {str(sys.argv[1])}")
+    df=spark.sql(f"select * from {str(sys.argv[1])}")
 
     df.write.format("jdbc").options(
         driver="com.mysql.cj.jdbc.Driver",
