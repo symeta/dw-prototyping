@@ -126,6 +126,7 @@ aws emr-serverless start-job-run \
     --job-driver '{
         "sparkSubmit": {
             "entryPoint": "s3://spark-sql-test-nov23rd/scripts/dec13-1/testpython.py",
+            "entryPointArguments": ["testspark"],
             "sparkSubmitParameters": "--conf spark.hadoop.hive.metastore.client.factory.class=com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory --conf spark.driver.cores=1 --conf spark.driver.memory=3g --conf spark.executor.cores=4 --conf spark.executor.memory=3g --jars s3://spark-sql-test-nov23rd/mysql-connector-j-8.2.0.jar"
         }
     }'
