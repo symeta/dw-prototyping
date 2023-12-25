@@ -48,7 +48,7 @@ The specific cost information is shown as per below snapshot:
 
 <img width="729" alt="Screenshot 2023-10-23 at 14 12 38" src="https://github.com/symeta/dw-prototyping/assets/97269758/6784d22f-fb2e-4602-a949-6b656dc39467">
 
-### tagging process
+### 3.2.5 tagging process
 
 - cli/console to add tag to target;
 - activate tag in cost-allocation-tag@billing and cost management console;
