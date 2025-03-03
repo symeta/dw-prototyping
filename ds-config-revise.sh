@@ -1,8 +1,8 @@
 Hive -f example.sql
 
-/usr/local/src/apache-dolphinscheduler/api-server/conf 
+#revise /usr/local/src/apache-dolphinscheduler/api-server/conf as below
 
-/usr/local/src/apache-dolphinscheduler/worker-server/conf 
+#revise /usr/local/src/apache-dolphinscheduler/worker-server/conf as below
 
 # resource storage type: HDFS, S3, OSS, NONE
 #resource.storage.type=NONE
@@ -22,7 +22,7 @@ resource.aws.s3.bucket.name=dolphinscheduler-shiyang
 resource.aws.s3.endpoint=s3.us-east-1.amazonaws.com
 
 
-/usr/local/src/apache-dolphinscheduler/
+cd /usr/local/src/apache-dolphinscheduler/
 
 bash ./bin/stop-all.sh
 bash ./bin/start-all.sh
